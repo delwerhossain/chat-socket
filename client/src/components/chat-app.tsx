@@ -8,16 +8,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PaperPlaneIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 
+// Define the type for your message object
+interface Message {
+  sender: string;
+  content: string;
+  time: string;
+}
+
 // Connect to your backend (replace with your backend URL if needed)
 const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000');
 
 export function ChatApp() {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]); // Specify the type here
 
   useEffect(() => {
     // Listen for incoming messages from the server
-    socket.on('message', (newMessage) => {
+    socket.on('message', (newMessage: Message) => { // Specify the type here
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
@@ -27,10 +34,10 @@ export function ChatApp() {
     };
   }, []);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim()) {
-      const newMessage = {
+      const newMessage: Message = {
         sender: 'You',
         content: message,
         time: new Date().toLocaleTimeString(),
